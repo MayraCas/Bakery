@@ -1,0 +1,102 @@
+﻿============================================================
+TEST DE INTEGRACI├ôN - TAREAS 4, 5, 7
+============================================================
+Ô£à Todos los imports exitosos
+
+
+Conectando a la base de datos...
+Ô£à Conexi├│n exitosa a PostgreSQL
+
+
+============================================================
+TAREA 4: PROBANDO REPOSITORIES
+============================================================
+
+[Test 1] ProductoRepository - Crear producto gen├®rico
+  Ô£à Producto creado con ID: 46
+  Ô£à Producto recuperado: Producto Test
+  Ô£à Producto actualizado: descripcion=Descripci├│n actualizada
+  Ô£à Producto eliminado
+
+[Test 2] PostreRepository - Crear postre con precio compuesto
+ÔØî PostreRepository fall├│: (psycopg2.errors.InvalidTextRepresentation) la sintaxis de entrada no es v├ílida para el enum type_dessert: ┬½PASTEL┬╗
+LINE 1: ...stre, precio, ingredientes, es_dulce) VALUES (47, 'PASTEL', ...
+                                                             ^
+
+[SQL: INSERT INTO postre (id, tipo_postre, precio, ingredientes, es_dulce) VALUES (%(id)s, %(tipo_postre)s, %(precio)s, %(ingredientes)s::TEXT[], %(es_dulce)s)]
+[parameters: {'id': 47, 'tipo_postre': 'PASTEL', 'precio': (Decimal('50.00'), Decimal('80.00'), Decimal('120.00')), 'ingredientes': ['harina', 'chocolate', 'huevos'], 'es_dulce': True}]
+(Background on this error at: https://sqlalche.me/e/20/9h9h)
+
+[Test 3] PanRepository - Crear pan con precio compuesto
+ÔØî PanRepository fall├│: This Session's transaction has been rolled back due to a previous exception during flush. To begin a new transaction with this Session, first issue Session.rollback(). Original exception was: (psycopg2.errors.InvalidTextRepresentation) la sintaxis de entrada no es v├ílida para el enum type_dessert: ┬½PASTEL┬╗
+LINE 1: ...stre, precio, ingredientes, es_dulce) VALUES (47, 'PASTEL', ...
+                                                             ^
+
+[SQL: INSERT INTO postre (id, tipo_postre, precio, ingredientes, es_dulce) VALUES (%(id)s, %(tipo_postre)s, %(precio)s, %(ingredientes)s::TEXT[], %(es_dulce)s)]
+[parameters: {'id': 47, 'tipo_postre': 'PASTEL', 'precio': (Decimal('50.00'), Decimal('80.00'), Decimal('120.00')), 'ingredientes': ['harina', 'chocolate', 'huevos'], 'es_dulce': True}]
+(Background on this error at: https://sqlalche.me/e/20/9h9h) (Background on this error at: https://sqlalche.me/e/20/7s2a)
+
+============================================================
+TAREA 5: PROBANDO SERVICES (VALIDACIONES)
+============================================================
+
+[Test 1] ProductoService - Validar nombre vac├¡o
+  Ô£à Validaci├│n correcta: El nombre del producto no puede estar vac├¡o
+
+[Test 2] PostreService - Validar coherencia de precios (small <= medium <= big)
+  Ô£à Validaci├│n correcta: El precio peque├▒o no puede ser mayor al mediano
+
+[Test 3] PostreService - Validar ingredientes vac├¡os
+  Ô£à Validaci├│n correcta: 1 validation error for PostreCreate
+ingredientes
+  List should have at least 1 item after validation, not 0 [type=too_short, input_value=[], input_type=list]
+    For further information visit https://errors.pydantic.dev/2.12/v/too_short
+
+[Test 4] PanService - Validar coherencia de precios (wholesale <= retail)
+  Ô£à Validaci├│n correcta: El precio al por mayor no puede ser mayor al precio al por menor
+
+[Test 5] VentaService - Validar venta sin productos
+  Ô£à Validaci├│n correcta: 1 validation error for VentaCreate
+detalles_venta
+  List should have at least 1 item after validation, not 0 [type=too_short, input_value=[], input_type=list]
+    For further information visit https://errors.pydantic.dev/2.12/v/too_short
+
+============================================================
+TAREA 7: PROBANDO ROUTERS (ESTRUCTURA)
+============================================================
+
+[Test 1] Verificar routers importables
+  Ô£à Todos los routers son importables
+  Ô£à Todos los routers tienen objeto 'router'
+
+[Test 2] Verificar endpoints en ProductoRouter
+  Rutas encontradas: ['/productos/', '/productos/{producto_id}', '/productos/', '/productos/{producto_id}', '/productos/{producto_id}']
+  Ô£à Endpoints CRUD presentes
+
+[Test 3] Verificar endpoint /ventas/crear (funci├│n SQL)
+  Rutas encontradas: ['/ventas/', '/ventas/crear', '/ventas/{venta_id}', '/ventas/', '/ventas/{venta_id}', '/ventas/{venta_id}']
+  Ô£à Endpoint /crear (funci├│n SQL) presente
+
+[Test 4] Verificar query parameters en routers
+  Ô£à Routers con query parameters configurados
+
+============================================================
+RESUMEN DE PRUEBAS
+============================================================
+
+ÔÜá´©Å  Se encontraron 2 problemas:
+
+1. ÔØî PostreRepository fall├│: (psycopg2.errors.InvalidTextRepresentation) la sintaxis de entrada no es v├ílida para el enum type_dessert: ┬½PASTEL┬╗
+LINE 1: ...stre, precio, ingredientes, es_dulce) VALUES (47, 'PASTEL', ...
+                                                             ^
+
+[SQL: INSERT INTO postre (id, tipo_postre, precio, ingredientes, es_dulce) VALUES (%(id)s, %(tipo_postre)s, %(precio)s, %(ingredientes)s::TEXT[], %(es_dulce)s)]
+[parameters: {'id': 47, 'tipo_postre': 'PASTEL', 'precio': (Decimal('50.00'), Decimal('80.00'), Decimal('120.00')), 'ingredientes': ['harina', 'chocolate', 'huevos'], 'es_dulce': True}]
+(Background on this error at: https://sqlalche.me/e/20/9h9h)
+2. ÔØî PanRepository fall├│: This Session's transaction has been rolled back due to a previous exception during flush. To begin a new transaction with this Session, first issue Session.rollback(). Original exception was: (psycopg2.errors.InvalidTextRepresentation) la sintaxis de entrada no es v├ílida para el enum type_dessert: ┬½PASTEL┬╗
+LINE 1: ...stre, precio, ingredientes, es_dulce) VALUES (47, 'PASTEL', ...
+                                                             ^
+
+[SQL: INSERT INTO postre (id, tipo_postre, precio, ingredientes, es_dulce) VALUES (%(id)s, %(tipo_postre)s, %(precio)s, %(ingredientes)s::TEXT[], %(es_dulce)s)]
+[parameters: {'id': 47, 'tipo_postre': 'PASTEL', 'precio': (Decimal('50.00'), Decimal('80.00'), Decimal('120.00')), 'ingredientes': ['harina', 'chocolate', 'huevos'], 'es_dulce': True}]
+(Background on this error at: https://sqlalche.me/e/20/9h9h) (Background on this error at: https://sqlalche.me/e/20/7s2a)
