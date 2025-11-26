@@ -1,7 +1,3 @@
-"""
-Repository para Venta y VentaDetalle
-CRUD para ventas y sus detalles
-"""
 from sqlalchemy.orm import Session
 from sqlalchemy import select, text, String
 from typing import List, Optional
@@ -11,29 +7,17 @@ from app.schemas.venta import VentaCreate, VentaUpdate, VentaDetalleCreate, Vent
 import json
 
 
-class VentaRepository:
-    """Repository para operaciones CRUD en Venta"""
-    
+class VentaRepository:    
     @staticmethod
     def create(db: Session, venta: VentaCreate) -> Venta:
-        """
-        Crear una nueva venta con sus detalles.
-        
-        IMPORTANTE: Los triggers de PostgreSQL se encargan de:
-        - Validar existencia de productos (trg_verificar_producto_fk)
-        - Actualizar stock (trg_gestion_stock)
-        - Calcular precio_total (trg_calcular_total_venta)
-        """
-        # Crear venta (cabecera) con precio_total = 0 (se calcula por trigger)
         db_venta = Venta(
             detalles=venta.detalles,
             fecha=venta.fecha or date.today(),
             precio_total=0
         )
         db.add(db_venta)
-        db.flush()  # Obtener el ID sin hacer commit
+        db.flush() 
         
-        # Crear detalles
         for detalle in venta.detalles_venta:
             db_detalle = VentaDetalle(
                 id_venta=db_venta.id,
@@ -49,30 +33,21 @@ class VentaRepository:
     
     @staticmethod
     def get_by_id(db: Session, venta_id: int) -> Optional[Venta]:
-        """Obtener venta por ID con sus detalles"""
         stmt = select(Venta).where(Venta.id == venta_id)
         return db.execute(stmt).scalar_one_or_none()
     
     @staticmethod
     def get_all(db: Session, skip: int = 0, limit: int = 100) -> List[Venta]:
-        """Obtener todas las ventas con paginación"""
         stmt = select(Venta).offset(skip).limit(limit).order_by(Venta.fecha.desc())
         return list(db.execute(stmt).scalars().all())
     
     @staticmethod
     def get_by_fecha(db: Session, fecha: date) -> List[Venta]:
-        """Obtener ventas por fecha"""
         stmt = select(Venta).where(Venta.fecha == fecha)
         return list(db.execute(stmt).scalars().all())
     
     @staticmethod
     def update(db: Session, venta_id: int, venta_update: VentaUpdate) -> Optional[Venta]:
-        """
-        Actualizar una venta.
-        
-        NOTA: Solo actualiza detalles y fecha.
-        precio_total NO se debe modificar manualmente (lo calcula el trigger).
-        """
         db_venta = VentaRepository.get_by_id(db, venta_id)
         if not db_venta:
             return None
@@ -87,12 +62,6 @@ class VentaRepository:
     
     @staticmethod
     def delete(db: Session, venta_id: int) -> bool:
-        """
-        Eliminar una venta.
-        
-        IMPORTANTE: Los detalles se eliminan en cascada (ON DELETE CASCADE).
-        Los triggers devuelven el stock automáticamente.
-        """
         db_venta = VentaRepository.get_by_id(db, venta_id)
         if not db_venta:
             return False
@@ -108,22 +77,9 @@ class VentaRepository:
         venta_detalle: List[dict],
         fecha: Optional[date] = None
     ) -> int:
-        """
-        Llama a la función SQL insertar_venta() de PostgreSQL.
-        
-        Esta función SQL maneja toda la lógica de:
-        - Crear venta
-        - Insertar detalles
-        - Triggers automáticos
-        
-        Returns:
-            ID de la venta creada
-        """
-        # Convertir venta_detalle a JSON string
+
         venta_detalle_json = json.dumps(venta_detalle)
         
-        # Usar SQL literal con f-string para evitar conflictos de parámetros
-        # Escapar comillas simples en los strings
         detalles_escaped = detalles.replace("'", "''")
         venta_detalle_escaped = venta_detalle_json.replace("'", "''")
         
@@ -140,15 +96,10 @@ class VentaRepository:
 
 
 class VentaDetalleRepository:
-    """Repository para operaciones CRUD en VentaDetalle"""
-    
+
     @staticmethod
     def create(db: Session, detalle: VentaDetalleCreate, venta_id: int) -> VentaDetalle:
-        """
-        Crear un detalle de venta.
-        
-        IMPORTANTE: Los triggers actualizan stock y recalculan total automáticamente.
-        """
+
         db_detalle = VentaDetalle(
             id_venta=venta_id,
             id_producto=detalle.id_producto,
@@ -162,23 +113,16 @@ class VentaDetalleRepository:
     
     @staticmethod
     def get_by_id(db: Session, detalle_id: int) -> Optional[VentaDetalle]:
-        """Obtener detalle por ID"""
         stmt = select(VentaDetalle).where(VentaDetalle.id == detalle_id)
         return db.execute(stmt).scalar_one_or_none()
     
     @staticmethod
     def get_by_venta(db: Session, venta_id: int) -> List[VentaDetalle]:
-        """Obtener todos los detalles de una venta"""
         stmt = select(VentaDetalle).where(VentaDetalle.id_venta == venta_id)
         return list(db.execute(stmt).scalars().all())
     
     @staticmethod
     def update(db: Session, detalle_id: int, detalle_update: VentaDetalleUpdate) -> Optional[VentaDetalle]:
-        """
-        Actualizar un detalle de venta.
-        
-        IMPORTANTE: Los triggers ajustan stock y recalculan total automáticamente.
-        """
         db_detalle = VentaDetalleRepository.get_by_id(db, detalle_id)
         if not db_detalle:
             return None
@@ -193,11 +137,6 @@ class VentaDetalleRepository:
     
     @staticmethod
     def delete(db: Session, detalle_id: int) -> bool:
-        """
-        Eliminar un detalle de venta.
-        
-        IMPORTANTE: Los triggers devuelven stock y recalculan total automáticamente.
-        """
         db_detalle = VentaDetalleRepository.get_by_id(db, detalle_id)
         if not db_detalle:
             return False

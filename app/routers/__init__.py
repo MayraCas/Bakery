@@ -1,6 +1,4 @@
-"""
-Routers - Endpoints de la API
-"""
+
 from .producto import router as producto_router
 from .postre import router as postre_router
 from .pan import router as pan_router

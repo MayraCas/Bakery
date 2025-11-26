@@ -1,6 +1,4 @@
-"""
-Services - Capa de lógica de negocio
-"""
+
 from .producto_service import ProductoService
 from .postre_service import PostreService
 from .pan_service import PanService

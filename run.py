@@ -1,7 +1,4 @@
-"""
-Script para ejecutar la aplicación FastAPI
-Uso: py run.py
-"""
+
 import uvicorn
 
 if __name__ == "__main__":
@@ -9,6 +6,6 @@ if __name__ == "__main__":
         "app.main:app",
         host="0.0.0.0",
         port=8000,
-        reload=True,  # Hot reload en desarrollo
+        reload=True,  
         log_level="info"
     )

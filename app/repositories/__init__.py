@@ -1,6 +1,3 @@
-"""
-Repositories - Capa de acceso a datos (CRUD operations)
-"""
 from .producto import ProductoRepository
 from .postre import PostreRepository
 from .pan import PanRepository

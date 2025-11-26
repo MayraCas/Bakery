@@ -5,11 +5,7 @@ from typing import NamedTuple
 from decimal import Decimal
 import enum
 
-
-# ============================================
-# TIPOS COMPUESTOS (Composite Types)
-# ============================================
-
+# TIPOS COMPUESTOS
 class PriceSize(NamedTuple):
     """
     Mapea el tipo compuesto PostgreSQL: price_size
@@ -25,13 +21,12 @@ class PriceAmount(NamedTuple):
     Mapea el tipo compuesto PostgreSQL: price_amount
     Representa precio según cantidad (al por menor, al por mayor)
     """
-    retail_sale: Decimal  # AL POR MENOR
-    wholesale: Decimal    # AL POR MAYOR
+    retail_sale: Decimal  
 
 
-# ============================================
-# TIPOS ENUMERADOS (ENUM Types)
-# ============================================
+
+# TIPOS ENUM
+
 
 class TypeDessert(str, enum.Enum):
     """Tipo de postre"""

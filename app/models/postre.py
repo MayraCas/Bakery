@@ -31,30 +31,22 @@ class Postre(Producto):
     """
     __tablename__ = "postre"
     
-    # IMPORTANTE: En PostgreSQL INHERITS, la tabla hija tiene todas las columnas
-    # No hay foreign key, las columnas se replican
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
     
-    # Columnas heredadas de Producto (necesitan declararse para SQLAlchemy)
     nombre: Mapped[str] = mapped_column(String(50), nullable=False)
     descripcion: Mapped[str | None] = mapped_column(Text, nullable=True)
     imagen_url: Mapped[str] = mapped_column(Text, nullable=False)
-    
-    # Columnas propias del postre
+
     tipo_postre: Mapped[TypeDessert | None] = mapped_column(
         SQLEnum(TypeDessert, name="type_dessert", create_type=False, values_callable=lambda x: [e.value for e in x]),
         nullable=True
     )
     
-    # Tipo compuesto price_size: (small, medium, big)
-    # Se mapea como Column porque SQLAlchemy no soporta bien COMPOSITE
-    # PostgreSQL devuelve esto como tupla ROW type
+
     precio = Column("precio", nullable=True)
-    
-    # Tipo compuesto status_size: (small, medium, big) - disponibilidad por tamaño
+
     disponible = Column("disponible", nullable=True)
-    
-    # Array de ingredientes
+
     ingredientes: Mapped[List[str] | None] = mapped_column(
         ARRAY(Text),
         nullable=True

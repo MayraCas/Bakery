@@ -1,7 +1,4 @@
-"""
-Router para Pan
-Endpoints CRUD para pan
-"""
+
 from fastapi import APIRouter, Depends, HTTPException, status, Query
 from sqlalchemy.orm import Session
 from typing import List, Optional

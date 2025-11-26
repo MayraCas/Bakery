@@ -1,6 +1,4 @@
-"""
-Schemas Pydantic para validación y serialización
-"""
+
 from .types import PriceSizeSchema, PriceAmountSchema
 from .producto import ProductoBase, ProductoCreate, ProductoUpdate, ProductoOut
 from .postre import PostreBase, PostreCreate, PostreUpdate, PostreOut

@@ -1,17 +1,10 @@
-"""
-Schemas Pydantic para tipos compuestos de PostgreSQL
-Mapean los tipos price_size y price_amount a objetos JSON
-"""
+
 from pydantic import BaseModel, Field, ConfigDict
 from decimal import Decimal
 from typing import Optional
 
 
 class PriceSizeSchema(BaseModel):
-    """
-    Schema para el tipo compuesto price_size
-    Representa precios según tamaño: pequeño, mediano, grande
-    """
     small: Decimal = Field(..., ge=0, decimal_places=2, description="Precio tamaño pequeño")
     medium: Decimal = Field(..., ge=0, decimal_places=2, description="Precio tamaño mediano")
     big: Decimal = Field(..., ge=0, decimal_places=2, description="Precio tamaño grande")
@@ -28,10 +21,7 @@ class PriceSizeSchema(BaseModel):
 
 
 class PriceAmountSchema(BaseModel):
-    """
-    Schema para el tipo compuesto price_amount
-    Representa precios según cantidad: al por menor, al por mayor
-    """
+
     retail_sale: Decimal = Field(..., ge=0, decimal_places=2, description="Precio al por menor")
     wholesale: Decimal = Field(..., ge=0, decimal_places=2, description="Precio al por mayor")
     
@@ -46,10 +36,7 @@ class PriceAmountSchema(BaseModel):
 
 
 class StatusSizeSchema(BaseModel):
-    """
-    Schema para el tipo compuesto status_size
-    Representa disponibilidad según tamaño: pequeño, mediano, grande
-    """
+
     small: bool = Field(True, description="Disponibilidad tamaño pequeño")
     medium: bool = Field(True, description="Disponibilidad tamaño mediano")
     big: bool = Field(True, description="Disponibilidad tamaño grande")

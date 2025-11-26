@@ -29,29 +29,20 @@ class Pan(Producto):
     """
     __tablename__ = "pan"
     
-    # IMPORTANTE: En PostgreSQL INHERITS, la tabla hija tiene todas las columnas
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
     
-    # Columnas heredadas de Producto
     nombre: Mapped[str] = mapped_column(String(50), nullable=False)
     descripcion: Mapped[str | None] = mapped_column(Text, nullable=True)
     imagen_url: Mapped[str] = mapped_column(Text, nullable=False)
     
-    # Columnas propias del pan
     tipo_pan: Mapped[TypeBread | None] = mapped_column(
         SQLEnum(TypeBread, name="type_bread", create_type=False, values_callable=lambda x: [e.value for e in x]),
         nullable=True
     )
-    
-    # Tipo compuesto price_amount: (retail_sale, wholesale)
-    # Se mapea como Column porque SQLAlchemy no soporta bien COMPOSITE
-    # PostgreSQL devuelve esto como tupla ROW type
+
     precio = Column("precio", nullable=True)
-    
-    # Disponibilidad del producto
+
     disponible = Column("disponible", nullable=True)
-    
-    # Array de ingredientes
     ingredientes: Mapped[List[str] | None] = mapped_column(
         ARRAY(Text),
         nullable=True

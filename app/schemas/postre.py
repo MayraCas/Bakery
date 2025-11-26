@@ -1,6 +1,4 @@
-"""
-Schemas Pydantic para Postre (hereda de Producto)
-"""
+
 from pydantic import BaseModel, Field, ConfigDict, field_serializer, field_validator
 from typing import Optional, List, Union
 from app.models.types import TypeDessert
@@ -9,7 +7,6 @@ from decimal import Decimal
 
 
 class PostreBase(BaseModel):
-    """Schema base para Postre - atributos comunes"""
     nombre: Optional[str] = Field(None, max_length=50, description="Nombre del postre")
     descripcion: Optional[str] = Field(None, description="Descripción del postre")
     imagen_url: Optional[str] = Field(None, description="URL de la imagen")
@@ -21,7 +18,6 @@ class PostreBase(BaseModel):
 
 
 class PostreCreate(PostreBase):
-    """Schema para crear un Postre"""
     nombre: str = Field(..., max_length=50, description="Nombre del postre")
     tipo_postre: TypeDessert = Field(..., description="Tipo de postre")
     precio: PriceSizeSchema = Field(..., description="Precio según tamaño")
@@ -30,7 +26,6 @@ class PostreCreate(PostreBase):
 
 
 class PostreUpdate(BaseModel):
-    """Schema para actualizar un Postre - todos los campos opcionales"""
     nombre: Optional[str] = Field(None, max_length=50)
     descripcion: Optional[str] = None
     imagen_url: Optional[str] = None
@@ -42,19 +37,15 @@ class PostreUpdate(BaseModel):
 
 
 class PostreOut(PostreBase):
-    """Schema para retornar un Postre"""
     id: int = Field(..., description="ID del postre")
     
     @field_validator('precio', mode='before')
     @classmethod
     def convert_precio_tuple(cls, v):
-        """Convierte tupla de PostgreSQL a PriceSizeSchema"""
         if v is None:
             return None
         
-        # Si viene como string (formato PostgreSQL: '(250.00,450.00,600.00)')
         if isinstance(v, str):
-            # Remover paréntesis y dividir por comas
             cleaned = v.strip('()')
             parts = cleaned.split(',')
             if len(parts) == 3:
@@ -64,7 +55,6 @@ class PostreOut(PostreBase):
                     big=Decimal(parts[2])
                 )
         
-        # Si viene como tupla de PostgreSQL, convertir a dict
         if isinstance(v, tuple) and len(v) == 3:
             return PriceSizeSchema(
                 small=Decimal(str(v[0])),
@@ -76,11 +66,9 @@ class PostreOut(PostreBase):
     @field_validator('disponible', mode='before')
     @classmethod
     def convert_disponible_tuple(cls, v):
-        """Convierte tupla de PostgreSQL a StatusSizeSchema"""
         if v is None:
             return StatusSizeSchema(small=True, medium=True, big=True)
         
-        # Si viene como string (formato PostgreSQL: '(t,t,f)')
         if isinstance(v, str):
             cleaned = v.strip('()')
             parts = cleaned.split(',')
@@ -91,7 +79,6 @@ class PostreOut(PostreBase):
                     big=parts[2].lower() == 't'
                 )
         
-        # Si viene como tupla de PostgreSQL
         if isinstance(v, tuple) and len(v) == 3:
             return StatusSizeSchema(
                 small=bool(v[0]),

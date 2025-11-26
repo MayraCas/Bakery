@@ -1,6 +1,4 @@
-"""
-Schemas Pydantic para Bebida (hereda de Producto)
-"""
+
 from pydantic import BaseModel, Field, ConfigDict, field_validator
 from typing import Optional, List, Union
 from app.models.types import TypeDrink
@@ -9,7 +7,6 @@ from decimal import Decimal
 
 
 class BebidaBase(BaseModel):
-    """Schema base para Bebida - atributos comunes"""
     nombre: Optional[str] = Field(None, max_length=50, description="Nombre de la bebida")
     descripcion: Optional[str] = Field(None, description="Descripción de la bebida")
     imagen_url: Optional[str] = Field(None, description="URL de la imagen")
@@ -21,7 +18,6 @@ class BebidaBase(BaseModel):
 
 
 class BebidaCreate(BebidaBase):
-    """Schema para crear una Bebida"""
     nombre: str = Field(..., max_length=50, description="Nombre de la bebida")
     tipo_bebida: TypeDrink = Field(..., description="Tipo de bebida")
     precio: PriceSizeSchema = Field(..., description="Precio según tamaño")
@@ -30,7 +26,6 @@ class BebidaCreate(BebidaBase):
 
 
 class BebidaUpdate(BaseModel):
-    """Schema para actualizar una Bebida - todos los campos opcionales"""
     nombre: Optional[str] = Field(None, max_length=50)
     descripcion: Optional[str] = None
     imagen_url: Optional[str] = None
@@ -42,7 +37,6 @@ class BebidaUpdate(BaseModel):
 
 
 class BebidaOut(BebidaBase):
-    """Schema para retornar una Bebida"""
     id: int = Field(..., description="ID de la bebida")
     
     @field_validator('precio', mode='before')
@@ -52,9 +46,7 @@ class BebidaOut(BebidaBase):
         if v is None:
             return None
         
-        # Si viene como string (formato PostgreSQL: '(250.00,450.00,600.00)')
         if isinstance(v, str):
-            # Remover paréntesis y dividir por comas
             cleaned = v.strip('()')
             parts = cleaned.split(',')
             if len(parts) == 3:
@@ -64,7 +56,6 @@ class BebidaOut(BebidaBase):
                     big=Decimal(parts[2])
                 )
         
-        # Si viene como tupla de PostgreSQL, convertir a schema
         if isinstance(v, tuple) and len(v) == 3:
             return PriceSizeSchema(
                 small=Decimal(str(v[0])),
@@ -80,7 +71,6 @@ class BebidaOut(BebidaBase):
         if v is None:
             return StatusSizeSchema(small=True, medium=True, big=True)
         
-        # Si viene como string (formato PostgreSQL: '(t,t,f)')
         if isinstance(v, str):
             cleaned = v.strip('()')
             parts = cleaned.split(',')
@@ -91,7 +81,6 @@ class BebidaOut(BebidaBase):
                     big=parts[2].lower() == 't'
                 )
         
-        # Si viene como tupla de PostgreSQL
         if isinstance(v, tuple) and len(v) == 3:
             return StatusSizeSchema(
                 small=bool(v[0]),

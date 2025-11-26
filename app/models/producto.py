@@ -16,13 +16,11 @@ class Producto(Base):
     """
     __tablename__ = "producto"
     
-    # Columnas
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
     nombre: Mapped[str | None] = mapped_column(String(50), nullable=False)
     descripcion: Mapped[str | None] = mapped_column(Text, nullable=True)
     imagen_url: Mapped[str | None] = mapped_column(Text, nullable=False)
-    
-    # Configuración de herencia
+
     __mapper_args__ = {
         "polymorphic_identity": "producto",
     }

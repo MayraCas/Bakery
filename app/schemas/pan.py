@@ -1,6 +1,4 @@
-"""
-Schemas Pydantic para Pan (hereda de Producto)
-"""
+
 from pydantic import BaseModel, Field, ConfigDict, field_validator
 from typing import Optional, List, Union
 from app.models.types import TypeBread
@@ -9,7 +7,6 @@ from decimal import Decimal
 
 
 class PanBase(BaseModel):
-    """Schema base para Pan - atributos comunes"""
     nombre: Optional[str] = Field(None, max_length=50, description="Nombre del pan")
     descripcion: Optional[str] = Field(None, description="Descripción del pan")
     imagen_url: Optional[str] = Field(None, description="URL de la imagen")
@@ -20,7 +17,6 @@ class PanBase(BaseModel):
 
 
 class PanCreate(PanBase):
-    """Schema para crear un Pan"""
     nombre: str = Field(..., max_length=50, description="Nombre del pan")
     tipo_pan: TypeBread = Field(..., description="Tipo de pan")
     precio: PriceAmountSchema = Field(..., description="Precio según cantidad")
@@ -28,7 +24,6 @@ class PanCreate(PanBase):
 
 
 class PanUpdate(BaseModel):
-    """Schema para actualizar un Pan - todos los campos opcionales"""
     nombre: Optional[str] = Field(None, max_length=50)
     descripcion: Optional[str] = None
     imagen_url: Optional[str] = None
@@ -39,19 +34,15 @@ class PanUpdate(BaseModel):
 
 
 class PanOut(PanBase):
-    """Schema para retornar un Pan"""
     id: int = Field(..., description="ID del pan")
     
     @field_validator('precio', mode='before')
     @classmethod
     def convert_precio_tuple(cls, v):
-        """Convierte tupla de PostgreSQL a PriceAmountSchema"""
         if v is None:
             return None
         
-        # Si viene como string (formato PostgreSQL: '(5.00,3.50)')
         if isinstance(v, str):
-            # Remover paréntesis y dividir por comas
             cleaned = v.strip('()')
             parts = cleaned.split(',')
             if len(parts) == 2:
@@ -60,7 +51,6 @@ class PanOut(PanBase):
                     wholesale=Decimal(parts[1])
                 )
         
-        # Si viene como tupla de PostgreSQL, convertir a schema
         if isinstance(v, tuple) and len(v) == 2:
             return PriceAmountSchema(
                 retail_sale=Decimal(str(v[0])),

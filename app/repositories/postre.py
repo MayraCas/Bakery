@@ -1,7 +1,3 @@
-"""
-Repository para Postre (hereda de Producto)
-CRUD para la tabla postre respetando la herencia
-"""
 from sqlalchemy.orm import Session
 from sqlalchemy import select
 from typing import List, Optional
@@ -10,15 +6,9 @@ from app.schemas.postre import PostreCreate, PostreUpdate
 
 
 class PostreRepository:
-    """Repository para operaciones CRUD en Postre"""
-    
+
     @staticmethod
     def create(db: Session, postre: PostreCreate) -> Postre:
-        """
-        Crear un nuevo postre.
-        La inserción en la tabla hija automáticamente crea el registro en producto (herencia).
-        """
-        # Convertir precio schema a tupla para PostgreSQL
         precio_tuple = None
         if postre.precio:
             precio_tuple = (
@@ -26,9 +16,7 @@ class PostreRepository:
                 postre.precio.medium,
                 postre.precio.big
             )
-        
-        # Crear el objeto directamente desde los atributos del schema
-        # Esto evita problemas con la serialización de enums
+
         db_postre = Postre(
             nombre=postre.nombre,
             descripcion=postre.descripcion,
@@ -47,30 +35,25 @@ class PostreRepository:
     
     @staticmethod
     def get_by_id(db: Session, postre_id: int) -> Optional[Postre]:
-        """Obtener postre por ID"""
         stmt = select(Postre).where(Postre.id == postre_id)
         return db.execute(stmt).scalar_one_or_none()
     
     @staticmethod
     def get_all(db: Session, skip: int = 0, limit: int = 100) -> List[Postre]:
-        """Obtener todos los postres con paginación"""
         stmt = select(Postre).offset(skip).limit(limit)
         return list(db.execute(stmt).scalars().all())
     
     @staticmethod
     def get_by_tipo(db: Session, tipo_postre: str) -> List[Postre]:
-        """Obtener postres por tipo"""
         stmt = select(Postre).where(Postre.tipo_postre == tipo_postre)
         return list(db.execute(stmt).scalars().all())
     
     @staticmethod
     def update(db: Session, postre_id: int, postre_update: PostreUpdate) -> Optional[Postre]:
-        """Actualizar un postre existente"""
         db_postre = PostreRepository.get_by_id(db, postre_id)
         if not db_postre:
             return None
         
-        # Actualizar campos uno por uno para tener control sobre los enums
         if postre_update.nombre is not None:
             db_postre.nombre = postre_update.nombre
         if postre_update.descripcion is not None:
@@ -84,7 +67,6 @@ class PostreRepository:
         if postre_update.es_dulce is not None:
             db_postre.es_dulce = postre_update.es_dulce
         
-        # Manejar precio especialmente
         if postre_update.precio is not None:
             precio_tuple = (
                 postre_update.precio.small,
@@ -93,7 +75,6 @@ class PostreRepository:
             )
             db_postre.precio = precio_tuple
         
-        # Manejar disponible especialmente
         if postre_update.disponible is not None:
             disponible_tuple = (
                 postre_update.disponible.small,
@@ -108,7 +89,6 @@ class PostreRepository:
     
     @staticmethod
     def delete(db: Session, postre_id: int) -> bool:
-        """Eliminar un postre"""
         db_postre = PostreRepository.get_by_id(db, postre_id)
         if not db_postre:
             return False

@@ -30,15 +30,6 @@ def tuple_to_price_size(value: Optional[Tuple]) -> Optional[PriceSize]:
 
 
 def tuple_to_price_amount(value: Optional[Tuple]) -> Optional[PriceAmount]:
-    """
-    Convierte una tupla de PostgreSQL price_amount a objeto PriceAmount.
-    
-    Args:
-        value: Tupla (retail_sale, wholesale) o None
-        
-    Returns:
-        PriceAmount NamedTuple o None
-    """
     if value is None:
         return None
     if isinstance(value, tuple) and len(value) == 2:
@@ -48,32 +39,13 @@ def tuple_to_price_amount(value: Optional[Tuple]) -> Optional[PriceAmount]:
         )
     return None
 
-
 def price_size_to_tuple(price: Optional[PriceSize]) -> Optional[Tuple[Decimal, Decimal, Decimal]]:
-    """
-    Convierte un objeto PriceSize a tupla para inserción en PostgreSQL.
-    
-    Args:
-        price: Objeto PriceSize o None
-        
-    Returns:
-        Tupla (small, medium, big) o None
-    """
+
     if price is None:
         return None
     return (price.small, price.medium, price.big)
 
-
 def price_amount_to_tuple(price: Optional[PriceAmount]) -> Optional[Tuple[Decimal, Decimal]]:
-    """
-    Convierte un objeto PriceAmount a tupla para inserción en PostgreSQL.
-    
-    Args:
-        price: Objeto PriceAmount o None
-        
-    Returns:
-        Tupla (retail_sale, wholesale) o None
-    """
     if price is None:
         return None
     return (price.retail_sale, price.wholesale)
