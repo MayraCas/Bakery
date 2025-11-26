@@ -35,6 +35,7 @@ class PostreRepository:
             imagen_url=postre.imagen_url,
             tipo_postre=postre.tipo_postre.value if postre.tipo_postre else None,
             precio=precio_tuple,
+            disponible=(True, True, True),  # Todos los tamaños disponibles por defecto
             ingredientes=postre.ingredientes,
             es_dulce=postre.es_dulce
         )
@@ -91,6 +92,15 @@ class PostreRepository:
                 postre_update.precio.big
             )
             db_postre.precio = precio_tuple
+        
+        # Manejar disponible especialmente
+        if postre_update.disponible is not None:
+            disponible_tuple = (
+                postre_update.disponible.small,
+                postre_update.disponible.medium,
+                postre_update.disponible.big
+            )
+            db_postre.disponible = disponible_tuple
         
         db.commit()
         db.refresh(db_postre)

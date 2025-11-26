@@ -4,7 +4,7 @@ Schemas Pydantic para Postre (hereda de Producto)
 from pydantic import BaseModel, Field, ConfigDict, field_serializer, field_validator
 from typing import Optional, List, Union
 from app.models.types import TypeDessert
-from .types import PriceSizeSchema
+from .types import PriceSizeSchema, StatusSizeSchema
 from decimal import Decimal
 
 
@@ -15,6 +15,7 @@ class PostreBase(BaseModel):
     imagen_url: Optional[str] = Field(None, description="URL de la imagen")
     tipo_postre: Optional[TypeDessert] = Field(None, description="Tipo de postre")
     precio: Optional[Union[PriceSizeSchema, tuple]] = Field(None, description="Precio según tamaño")
+    disponible: Optional[Union[StatusSizeSchema, tuple]] = Field(None, description="Disponibilidad según tamaño")
     ingredientes: Optional[List[str]] = Field(None, description="Lista de ingredientes")
     es_dulce: Optional[bool] = Field(None, description="Indica si es dulce")
 
@@ -35,6 +36,7 @@ class PostreUpdate(BaseModel):
     imagen_url: Optional[str] = None
     tipo_postre: Optional[TypeDessert] = None
     precio: Optional[PriceSizeSchema] = None
+    disponible: Optional[StatusSizeSchema] = None
     ingredientes: Optional[List[str]] = None
     es_dulce: Optional[bool] = None
 
@@ -68,6 +70,33 @@ class PostreOut(PostreBase):
                 small=Decimal(str(v[0])),
                 medium=Decimal(str(v[1])),
                 big=Decimal(str(v[2]))
+            )
+        return v
+    
+    @field_validator('disponible', mode='before')
+    @classmethod
+    def convert_disponible_tuple(cls, v):
+        """Convierte tupla de PostgreSQL a StatusSizeSchema"""
+        if v is None:
+            return StatusSizeSchema(small=True, medium=True, big=True)
+        
+        # Si viene como string (formato PostgreSQL: '(t,t,f)')
+        if isinstance(v, str):
+            cleaned = v.strip('()')
+            parts = cleaned.split(',')
+            if len(parts) == 3:
+                return StatusSizeSchema(
+                    small=parts[0].lower() == 't',
+                    medium=parts[1].lower() == 't',
+                    big=parts[2].lower() == 't'
+                )
+        
+        # Si viene como tupla de PostgreSQL
+        if isinstance(v, tuple) and len(v) == 3:
+            return StatusSizeSchema(
+                small=bool(v[0]),
+                medium=bool(v[1]),
+                big=bool(v[2])
             )
         return v
     

@@ -111,7 +111,8 @@ class VentaService:
             {
                 "id_producto": d.id_producto,
                 "cantidad": d.cantidad,
-                "precio": str(d.precio)
+                "precio": str(d.precio),
+                "variante": d.variante
             }
             for d in request.venta_detalle
         ]

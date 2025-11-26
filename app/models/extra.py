@@ -44,6 +44,9 @@ class Extra(Producto):
     # PostgreSQL devuelve esto como tupla ROW type
     precio = Column("precio", nullable=True)
     
+    # Disponibilidad del producto
+    disponible = Column("disponible", nullable=True)
+    
     __mapper_args__ = {
         "polymorphic_identity": "extra",
         "concrete": True,

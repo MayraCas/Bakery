@@ -43,3 +43,24 @@ class PriceAmountSchema(BaseModel):
             }
         }
     )
+
+
+class StatusSizeSchema(BaseModel):
+    """
+    Schema para el tipo compuesto status_size
+    Representa disponibilidad según tamaño: pequeño, mediano, grande
+    """
+    small: bool = Field(True, description="Disponibilidad tamaño pequeño")
+    medium: bool = Field(True, description="Disponibilidad tamaño mediano")
+    big: bool = Field(True, description="Disponibilidad tamaño grande")
+    
+    model_config = ConfigDict(
+        json_schema_extra={
+            "example": {
+                "small": True,
+                "medium": True,
+                "big": False
+            }
+        }
+    )
+

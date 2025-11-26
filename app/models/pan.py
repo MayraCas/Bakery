@@ -48,6 +48,9 @@ class Pan(Producto):
     # PostgreSQL devuelve esto como tupla ROW type
     precio = Column("precio", nullable=True)
     
+    # Disponibilidad del producto
+    disponible = Column("disponible", nullable=True)
+    
     # Array de ingredientes
     ingredientes: Mapped[List[str] | None] = mapped_column(
         ARRAY(Text),

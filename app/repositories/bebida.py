@@ -34,6 +34,7 @@ class BebidaRepository:
             imagen_url=bebida.imagen_url,
             tipo_bebida=bebida.tipo_bebida.value if bebida.tipo_bebida else None,
             precio=precio_tuple,
+            disponible=(True, True, True),  # Todos los tamaños disponibles por defecto
             ingredientes=bebida.ingredientes,
             es_fria=bebida.es_fria
         )
@@ -96,6 +97,15 @@ class BebidaRepository:
                 bebida_update.precio.big
             )
             db_bebida.precio = precio_tuple
+        
+        # Manejar disponible especialmente
+        if bebida_update.disponible is not None:
+            disponible_tuple = (
+                bebida_update.disponible.small,
+                bebida_update.disponible.medium,
+                bebida_update.disponible.big
+            )
+            db_bebida.disponible = disponible_tuple
         
         db.commit()
         db.refresh(db_bebida)

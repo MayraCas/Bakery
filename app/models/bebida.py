@@ -48,6 +48,9 @@ class Bebida(Producto):
     # PostgreSQL devuelve esto como tupla ROW type
     precio = Column("precio", nullable=True)
     
+    # Tipo compuesto status_size: (small, medium, big) - disponibilidad por tamaño
+    disponible = Column("disponible", nullable=True)
+    
     # Array de ingredientes
     ingredientes: Mapped[List[str] | None] = mapped_column(
         ARRAY(Text),

@@ -3,7 +3,7 @@ Repository para Venta y VentaDetalle
 CRUD para ventas y sus detalles
 """
 from sqlalchemy.orm import Session
-from sqlalchemy import select, text
+from sqlalchemy import select, text, String
 from typing import List, Optional
 from datetime import date
 from app.models import Venta, VentaDetalle
@@ -119,37 +119,21 @@ class VentaRepository:
         Returns:
             ID de la venta creada
         """
-        # Convertir venta_detalle a JSON
+        # Convertir venta_detalle a JSON string
         venta_detalle_json = json.dumps(venta_detalle)
         
-        # Preparar fecha
-        fecha_str = fecha.isoformat() if fecha else None
+        # Usar SQL literal con f-string para evitar conflictos de parámetros
+        # Escapar comillas simples en los strings
+        detalles_escaped = detalles.replace("'", "''")
+        venta_detalle_escaped = venta_detalle_json.replace("'", "''")
         
-        # Ejecutar función SQL
-        if fecha_str:
-            query = text(
-                "SELECT insertar_venta(:detalles, :venta_detalle::jsonb, :fecha::date)"
-            )
-            result = db.execute(
-                query,
-                {
-                    "detalles": detalles,
-                    "venta_detalle": venta_detalle_json,
-                    "fecha": fecha_str
-                }
-            )
+        if fecha:
+            fecha_str = fecha.isoformat() if isinstance(fecha, date) else fecha
+            sql = f"SELECT insertar_venta('{detalles_escaped}', '{venta_detalle_escaped}'::jsonb, '{fecha_str}'::date)"
         else:
-            query = text(
-                "SELECT insertar_venta(:detalles, :venta_detalle::jsonb)"
-            )
-            result = db.execute(
-                query,
-                {
-                    "detalles": detalles,
-                    "venta_detalle": venta_detalle_json
-                }
-            )
+            sql = f"SELECT insertar_venta('{detalles_escaped}', '{venta_detalle_escaped}'::jsonb)"
         
+        result = db.execute(text(sql))
         venta_id = result.scalar()
         db.commit()
         return venta_id

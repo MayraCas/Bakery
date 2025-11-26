@@ -32,7 +32,8 @@ class ExtraRepository:
             descripcion=extra.descripcion,
             imagen_url=extra.imagen_url,
             tipo_extra=extra.tipo_extra.value if extra.tipo_extra else None,
-            precio=precio_tuple
+            precio=precio_tuple,
+            disponible=True  # Disponible por defecto
         )
         
         db.add(db_extra)
@@ -82,6 +83,10 @@ class ExtraRepository:
                 extra_update.precio.wholesale
             )
             db_extra.precio = precio_tuple
+        
+        # Manejar disponible
+        if extra_update.disponible is not None:
+            db_extra.disponible = extra_update.disponible
         
         db.commit()
         db.refresh(db_extra)

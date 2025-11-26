@@ -33,6 +33,7 @@ class PanRepository:
             imagen_url=pan.imagen_url,
             tipo_pan=pan.tipo_pan.value if pan.tipo_pan else None,
             precio=precio_tuple,
+            disponible=True,  # Disponible por defecto
             ingredientes=pan.ingredientes
         )
         
@@ -85,6 +86,10 @@ class PanRepository:
                 pan_update.precio.wholesale
             )
             db_pan.precio = precio_tuple
+        
+        # Manejar disponible
+        if pan_update.disponible is not None:
+            db_pan.disponible = pan_update.disponible
         
         db.commit()
         db.refresh(db_pan)

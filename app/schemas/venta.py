@@ -163,6 +163,7 @@ class VentaDetalleJSON(BaseModel):
     id_producto: int = Field(..., description="ID del producto")
     cantidad: int = Field(..., ge=1, description="Cantidad")
     precio: Decimal = Field(..., ge=0, decimal_places=2, description="Precio unitario")
+    variante: str = Field(..., description="Variante del producto: small, medium, big, retail, wholesale")
 
 
 class InsertarVentaRequest(BaseModel):
@@ -183,8 +184,8 @@ class InsertarVentaRequest(BaseModel):
                 "detalles": "Venta de pastel",
                 "fecha": "2025-11-25",
                 "venta_detalle": [
-                    {"id_producto": 9, "cantidad": 10, "precio": "35.00"},
-                    {"id_producto": 12, "cantidad": 6, "precio": "72.00"}
+                    {"id_producto": 1, "cantidad": 1, "precio": "380.00", "variante": "medium"},
+                    {"id_producto": 15, "cantidad": 2, "precio": "45.00", "variante": "small"}
                 ]
             }
         }
