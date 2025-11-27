@@ -348,6 +348,37 @@ VALUES
 ('Vaso Cafetero', 'Vaso térmico reutilizable', TRUE, 'Vaso', ROW(80.00, 65.00), 'https://i.pinimg.com/1200x/cf/32/bd/cf32bd01a75f4aecb54745173e332a22.jpg');
 
 
+CREATE OR REPLACE FUNCTION obtener_ventas_detalles()
+RETURNS TABLE (
+    id_venta INT,
+    fecha DATE,
+    productos JSON,
+    total NUMERIC(10,2)
+) AS
+$BODY$
+BEGIN
+    RETURN QUERY
+    SELECT 
+        v.id AS id_venta,
+        v.fecha,
+        json_agg(
+            json_build_object(
+                'id_producto', vd.id_producto,
+                'cantidad', vd.cantidad,
+                'precio_unitario', vd.precio,
+                'variante', vd.variante
+            )
+        ) AS productos,
+        v.precio_total AS total
+    FROM venta v
+    LEFT JOIN venta_detalle vd ON v.id = vd.id_venta
+    GROUP BY v.id, v.fecha, v.precio_total
+    ORDER BY v.fecha DESC;
+END;
+$BODY$
+LANGUAGE 'plpgsql';
+
+SELECT * FROM obtener_ventas_detalles()
 -- ============================================
 -- LLAMAR A LA FUNCION DE INSERTAR_VENTA:
 -- ============================================

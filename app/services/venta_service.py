@@ -85,3 +85,11 @@ class VentaService:
             return venta_id
         except Exception as e:
             raise ValueError(f"Error al crear venta: {str(e)}")
+    
+    @staticmethod
+    def obtener_ventas_detalles(db: Session) -> List[dict]:
+        """
+        Obtiene el historial de ventas con sus detalles completos.
+        Usa la función SQL obtener_ventas_detalles().
+        """
+        return VentaRepository.obtener_ventas_detalles(db)

@@ -93,6 +93,26 @@ class VentaRepository:
         venta_id = result.scalar()
         db.commit()
         return venta_id
+    
+    @staticmethod
+    def obtener_ventas_detalles(db: Session) -> List[dict]:
+        """
+        Obtiene el historial completo de ventas usando la función SQL obtener_ventas_detalles().
+        Retorna una lista de diccionarios con id_venta, fecha, productos (JSON) y total.
+        """
+        sql = "SELECT * FROM obtener_ventas_detalles()"
+        result = db.execute(text(sql))
+        
+        ventas = []
+        for row in result:
+            ventas.append({
+                "id_venta": row[0],
+                "fecha": row[1].isoformat() if row[1] else None,
+                "productos": row[2],
+                "total": float(row[3]) if row[3] else 0.0
+            })
+        
+        return ventas
 
 
 class VentaDetalleRepository:

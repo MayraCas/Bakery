@@ -4,7 +4,7 @@ from sqlalchemy.orm import sessionmaker, Session
 from typing import Generator
 
 # URL de conexión a PostgreSQL
-URL_DATABASE = 'postgresql://postgres:Daniel183.@localhost:5432/panaderia'
+URL_DATABASE = 'postgresql://postgres:root@localhost:5432/panaderia'
 
 engine = create_engine(
     URL_DATABASE,

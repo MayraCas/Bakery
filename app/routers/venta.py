@@ -109,6 +109,27 @@ def update_venta(
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
 
 
+@router.get("/historial/detalles", response_model=List[dict])
+def get_ventas_historial(
+    db: Session = Depends(get_db)
+):
+    """
+    Obtener historial completo de ventas con detalles.
+    Usa la función SQL obtener_ventas_detalles() que retorna:
+    - id_venta
+    - fecha
+    - productos (JSON con detalles)
+    - total
+    """
+    try:
+        return VentaService.obtener_ventas_detalles(db)
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Error al obtener historial de ventas: {str(e)}"
+        )
+
+
 @router.delete("/{venta_id}", status_code=status.HTTP_204_NO_CONTENT)
 def delete_venta(
     venta_id: int,
